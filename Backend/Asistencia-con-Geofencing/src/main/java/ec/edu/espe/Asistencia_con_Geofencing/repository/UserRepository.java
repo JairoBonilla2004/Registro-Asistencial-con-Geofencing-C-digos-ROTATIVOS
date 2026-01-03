@@ -1,7 +1,6 @@
 package ec.edu.espe.Asistencia_con_Geofencing.repository;
 
 import ec.edu.espe.Asistencia_con_Geofencing.model.User;
-import ec.edu.espe.Asistencia_con_Geofencing.model.enums.ProviderType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,13 +17,16 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByEmail(String email);
 
-    List<User> findByProvider(ProviderType provider);
-
-    List<User> findByEnabled(Boolean enabled);
-
-    @Query("SELECT DISTINCT u FROM User u JOIN u.roles r WHERE r.name = :roleName")
-    List<User> findByRoleName(@Param("roleName") String roleName);
-
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.email = :email")
     Optional<User> findByEmailWithRoles(@Param("email") String email);
+
+    @Query("""
+    SELECT u
+    FROM User u
+    JOIN u.roles r
+    WHERE r.name = 'STUDENT'
+      AND u.id NOT IN :attendedIds
+    """)
+    List<User> findStudentsNotIn(@Param("attendedIds") List<UUID> attendedIds);
+
 }
