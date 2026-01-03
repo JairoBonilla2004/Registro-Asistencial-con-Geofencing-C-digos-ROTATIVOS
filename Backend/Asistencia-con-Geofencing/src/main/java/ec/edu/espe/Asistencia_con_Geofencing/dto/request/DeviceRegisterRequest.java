@@ -1,22 +1,15 @@
 package ec.edu.espe.Asistencia_con_Geofencing.dto.request;
 
-import ec.edu.espe.Asistencia_con_Geofencing.model.enums.PlatformType;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class DeviceRegisterRequest {
-
-    @NotBlank(message = "Device identifier is required")
+    @NotBlank(message = "El identificador del dispositivo es requerido")
     private String deviceIdentifier;
 
-    @NotNull(message = "Platform is required")
-    private PlatformType platform;
+    @NotBlank(message = "La plataforma es requerida")
+    private String platform; // "ANDROID" o "WEB"
 
     private String fcmToken;
 }

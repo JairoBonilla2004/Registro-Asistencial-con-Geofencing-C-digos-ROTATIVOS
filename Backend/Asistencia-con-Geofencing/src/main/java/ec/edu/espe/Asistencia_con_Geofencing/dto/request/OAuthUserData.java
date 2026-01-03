@@ -1,15 +1,18 @@
 package ec.edu.espe.Asistencia_con_Geofencing.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GoogleLoginRequest {
-
-    @NotBlank(message = "Google ID token is required")
-    private String idToken;
+public class OAuthUserData {
+    private String providerUserId;
+    private String email;
+    private String fullName;
 }

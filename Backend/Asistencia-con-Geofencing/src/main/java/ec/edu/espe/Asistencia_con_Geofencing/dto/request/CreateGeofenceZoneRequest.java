@@ -1,32 +1,23 @@
 package ec.edu.espe.Asistencia_con_Geofencing.dto.request;
 
-import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class CreateGeofenceZoneRequest {
-
-    @NotBlank(message = "Zone name is required")
-    @Size(max = 100, message = "Zone name must not exceed 100 characters")
+    @NotBlank(message = "El nombre es requerido")
     private String name;
 
-    @NotNull(message = "Latitude is required")
-    @DecimalMin(value = "-90.0", message = "Latitude must be between -90 and 90")
-    @DecimalMax(value = "90.0", message = "Latitude must be between -90 and 90")
+    @NotNull(message = "La latitud es requerida")
     private BigDecimal latitude;
 
-    @NotNull(message = "Longitude is required")
-    @DecimalMin(value = "-180.0", message = "Longitude must be between -180 and 180")
-    @DecimalMax(value = "180.0", message = "Longitude must be between -180 and 180")
+    @NotNull(message = "La longitud es requerida")
     private BigDecimal longitude;
 
-    @NotNull(message = "Radius is required")
-    @Min(value = 1, message = "Radius must be at least 1 meter")
+    @NotNull(message = "El radio es requerido")
+    @Positive(message = "El radio debe ser positivo")
     private Integer radiusMeters;
 }
