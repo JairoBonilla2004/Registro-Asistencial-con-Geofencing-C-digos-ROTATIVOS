@@ -1,5 +1,6 @@
 package ec.edu.espe.Asistencia_con_Geofencing.model;
 
+import ec.edu.espe.Asistencia_con_Geofencing.model.enums.ReportStatus;
 import ec.edu.espe.Asistencia_con_Geofencing.model.enums.ReportType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -43,4 +44,8 @@ public class ReportRequest {
 
     @Column(name = "file_path", length = 255)
     private String filePath;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private ReportStatus status = ReportStatus.GENERATING;
 }

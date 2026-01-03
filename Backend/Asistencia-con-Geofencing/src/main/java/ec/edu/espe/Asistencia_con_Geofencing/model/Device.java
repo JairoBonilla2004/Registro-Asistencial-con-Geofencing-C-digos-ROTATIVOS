@@ -40,6 +40,9 @@ public class Device {
     @Column(name = "fcm_token", length = 255)
     private String fcmToken;
 
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
+
     @UpdateTimestamp
     @Column(name = "last_seen")
     private LocalDateTime lastSeen;

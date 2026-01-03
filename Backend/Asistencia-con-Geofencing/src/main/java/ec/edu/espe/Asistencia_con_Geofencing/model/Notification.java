@@ -3,6 +3,7 @@ package ec.edu.espe.Asistencia_con_Geofencing.model;
 import ec.edu.espe.Asistencia_con_Geofencing.model.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Notification {
 
     @Id
@@ -38,4 +40,7 @@ public class Notification {
     @CreationTimestamp
     @Column(name = "sent_at", nullable = false, updatable = false)
     private LocalDateTime sentAt;
+
+    @Column(name = "read_at")
+    private LocalDateTime readAt;
 }

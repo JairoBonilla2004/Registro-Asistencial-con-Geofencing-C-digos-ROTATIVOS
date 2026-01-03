@@ -21,6 +21,9 @@ public class AttendanceSession {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @Column(name = "name", nullable = true)
+    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teacher_id")
     private User teacher;
