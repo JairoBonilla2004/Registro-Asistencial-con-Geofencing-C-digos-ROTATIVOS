@@ -1,3 +1,141 @@
 spring:
   application:
-    name: Asistencia-con-Geofencing
+    name: asistencia-con-geofencing
+
+  # Configuración de Base de Datos PostgreSQL (Docker)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/asistencia_db
+    username: postgres
+    password: postgres123
+    driver-class-name: org.postgresql.Driver
+
+  # Configuración JPA/Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: update # Cambiar a 'validate' en producción
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: America/Guayaquil
+  
+  # Configuración de Multipart (para archivos)
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+# Configuración de Logging
+logging:
+  level:
+    ec.edu.espe.Asistencia_con_Geofencing: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# Configuración JWT
+jwt:
+  secret: ${JWT_SECRET:your-very-long-secret-key-change-this-in-production-minimum-256-bits-for-HS256}
+  expiration: 1800000  # 30 minutos en milisegundos (20-30 min como especificado)
+
+# Configuración de tokens QR
+qr:
+  token:
+    validity:
+      seconds: 25  # Validez de 20-30 segundos (configurable)
+
+# Configuración OpenAPI / Swagger 3.0
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    use-root-path: true
+  show-actuator: true
+
+# Configuración OAuth (Google y Facebook)
+oauth:
+  google:
+    # Web Client ID del google-services.json (client_type: 3)
+    client-id: ${GOOGLE_CLIENT_ID:TU-GOOGLE-CLIENT-ID}
+  facebook:
+    # Obtener en: https://developers.facebook.com/apps/
+    app-id: ${FACEBOOK_APP_ID:tu-facebook-app-id}
+    app-secret: ${FACEBOOK_APP_SECRET:tu-facebook-app-secret}
+
+# Configuración de Geofencing
+geofencing:
+  earth-radius-meters: 6371000  # Radio de la tierra en metros para cálculo Haversine
+
+# Configuración de Reportes
+reports:
+  storage:
+    path: ${REPORTS_PATH:${java.io.tmpdir}/reports}  # Ruta donde se guardan los PDFs generados (usando directorio temporal del sistema)
+
+# Configuración de Firebase Cloud Messaging (FCM)
+fcm:
+  enabled: true  # Cambiar a true cuando se configure FCM
+  service-account-file: ${FCM_SERVICE_ACCOUNT:TU-RUTA-AL-ARCHIVO-JSON-DE-FIREBASE}
+  # TODO: Configurar credenciales de Firebase
+
+# Configuración del servidor
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: false
+
+# Configuración de Actuator (health checks)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Configuración de CORS (adicional a SecurityConfig)
+cors:
+  allowed-origins: 
+    - http://localhost:5173
+    - http://localhost:3000
+    - http://localhost:8080
+    - https://tu-dominio.com
+
+# Configuración para desarrollo
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  logging:
+    level:
+      ec.edu.espe.Asistencia_con_Geofencing: DEBUG
+
+
+# Configuración para producción
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+  logging:
+    level:
+      ec.edu.espe.Asistencia_con_Geofencing: INFO
+      org.springframework.security: WARN
