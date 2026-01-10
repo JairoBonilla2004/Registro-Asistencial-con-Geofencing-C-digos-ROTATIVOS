@@ -10,6 +10,7 @@ import ec.edu.espe.Asistencia_con_Geofencing.model.AttendanceSession;
 import ec.edu.espe.Asistencia_con_Geofencing.model.GeofenceZone;
 import ec.edu.espe.Asistencia_con_Geofencing.model.Notification;
 import ec.edu.espe.Asistencia_con_Geofencing.model.User;
+import ec.edu.espe.Asistencia_con_Geofencing.model.enums.RoleType;
 import ec.edu.espe.Asistencia_con_Geofencing.repository.AttendanceSessionRepository;
 import ec.edu.espe.Asistencia_con_Geofencing.repository.GeofenceZoneRepository;
 import ec.edu.espe.Asistencia_con_Geofencing.repository.UserRepository;
@@ -84,26 +85,21 @@ public class SessionServiceImpl implements SessionService {
         session.setActive(false);
         session.setEndTime(LocalDateTime.now());
         sessionRepository.save(session);
-        
-        List<Notification> notifications = notificationService.createAbsenceNotifications(session);
-        
-        // Enviar pushes deduplicando por token FCM para evitar duplicados en el mismo dispositivo
+
+        List<Notification> notifications =
+                notificationService.createAbsenceNotifications(session);
+
         notifications.stream()
-                .collect(java.util.stream.Collectors.groupingBy(
-                        n -> n.getUser().getId(),
-                        java.util.stream.Collectors.toList()
-                ))
+                .filter(n -> n.getUser().hasRole(RoleType.STUDENT))
+                .collect(Collectors.groupingBy(n -> n.getUser().getId()))
                 .values()
                 .forEach(userNotifications -> {
-                    // Solo enviar la primera notificación de cada usuario
-                    // (en caso de múltiples notificaciones del mismo user)
-                    if (!userNotifications.isEmpty()) {
-                        pushNotificationService.sendAbsencePush(userNotifications.get(0));
-                    }
+                    pushNotificationService.sendAbsencePush(userNotifications.get(0));
                 });
-        
+
         return SessionMapper.mapToResponse(session);
     }
+
 
 
 }
