@@ -15,6 +15,7 @@ import ec.edu.espe.Asistencia_con_Geofencing.model.enums.ProviderType;
 import ec.edu.espe.Asistencia_con_Geofencing.repository.OAuthAccountRepository;
 import ec.edu.espe.Asistencia_con_Geofencing.repository.RoleRepository;
 import ec.edu.espe.Asistencia_con_Geofencing.repository.UserRepository;
+import ec.edu.espe.Asistencia_con_Geofencing.service.device.DeviceService;
 import ec.edu.espe.Asistencia_con_Geofencing.utils.JwtUtil;
 import ec.edu.espe.Asistencia_con_Geofencing.utils.auth.factory.OAuthStrategyFactory;
 import ec.edu.espe.Asistencia_con_Geofencing.utils.auth.strategy.OAuthLoginStrategy;
@@ -39,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
     private final UserMapper userMapper;
     private final OAuthStrategyFactory oAuthStrategyFactory;
+    private final DeviceService deviceService;
 
     @Transactional
     public AuthResponse register(RegisterUserRequest request) {
@@ -78,6 +80,18 @@ public class AuthServiceImpl implements AuthService {
                 provider,
                 providerType
         );
+        
+        if (request.getFcmToken() != null && !request.getFcmToken().isEmpty() &&
+            request.getDeviceIdentifier() != null && !request.getDeviceIdentifier().isEmpty()) {
+            
+            DeviceRegisterRequest deviceRequest = DeviceRegisterRequest.builder()
+                    .deviceIdentifier(request.getDeviceIdentifier())
+                    .fcmToken(request.getFcmToken())
+                    .build();
+            
+            deviceService.registerDevice(user.getId(), deviceRequest);
+        }
+        
         return buildAuthResponse(user);
     }
 
@@ -132,5 +146,11 @@ public class AuthServiceImpl implements AuthService {
                 .type("Bearer")
                 .user(userResponse)
                 .build();
+    }
+    
+    @Override
+    @Transactional
+    public void logout(UUID userId, LogoutRequest request) {
+        deviceService.deactivateDeviceByIdentifier(userId, request.getDeviceIdentifier());
     }
 }
