@@ -1,6 +1,7 @@
 package ec.edu.espe.Asistencia_con_Geofencing.model;
 
 import ec.edu.espe.Asistencia_con_Geofencing.model.enums.ProviderType;
+import ec.edu.espe.Asistencia_con_Geofencing.model.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -71,4 +72,11 @@ public class User {
 
     @OneToMany(mappedBy = "requestedBy", cascade = CascadeType.ALL)
     private Set<ReportRequest> reportRequests = new HashSet<>();
+
+    public boolean hasRole(RoleType roleType) {
+        return roles.stream()
+                .anyMatch(role -> role.getName().equals(roleType.name()));
+    }
+
+
 }

@@ -1,4 +1,6 @@
 package ec.edu.espe.Asistencia_con_Geofencing.model.enums;
 
-public class RoleType {
+public enum RoleType {
+    STUDENT,
+    DOCENTE
 }
