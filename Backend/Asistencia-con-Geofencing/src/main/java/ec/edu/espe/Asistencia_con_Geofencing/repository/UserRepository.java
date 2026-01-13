@@ -28,5 +28,13 @@ public interface UserRepository extends JpaRepository<User, UUID> {
       AND u.id NOT IN :attendedIds
     """)
     List<User> findStudentsNotIn(@Param("attendedIds") List<UUID> attendedIds);
+    
+    @Query("""
+    SELECT u
+    FROM User u
+    JOIN u.roles r
+    WHERE r.name = 'STUDENT'
+    """)
+    List<User> findAllStudents();
 
 }
