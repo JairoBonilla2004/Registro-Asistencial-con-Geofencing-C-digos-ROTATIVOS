@@ -18,6 +18,21 @@ public class AuthRequest {
     private String email;
     private String password;
     private String token;
+    
+    // ===== CAMPOS PARA MANEJO DE NOTIFICACIONES PUSH =====
+    /**
+     * FCM Token del dispositivo (opcional en login)
+     * Si se proporciona, se registra automáticamente el dispositivo
+     * Solución profesional: Token sigue al usuario que inicia sesión
+     */
+    private String fcmToken;
+    
+    /**
+     * Identificador único del dispositivo (opcional)
+     * Ejemplo: "samsung_galaxy_s23_abc123", "iphone_14_xyz789"
+     * Permite identificar el dispositivo específico
+     */
+    private String deviceIdentifier;
 
     public void validate() {
         String providerUpper = provider.toUpperCase();
