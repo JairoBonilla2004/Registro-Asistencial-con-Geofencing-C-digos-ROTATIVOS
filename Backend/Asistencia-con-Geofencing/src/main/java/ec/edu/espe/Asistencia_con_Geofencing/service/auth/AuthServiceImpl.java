@@ -27,8 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -139,7 +141,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private AuthResponse buildAuthResponse(User user) {
-        String token = jwtUtil.generateToken(user.getId(), user.getEmail());
+        List<String> roles = user.getRoles().stream()
+                .map(Role::getName)
+                .toList();
+        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), roles);
         UserResponse userResponse = userMapper.toResponse(user);
         return AuthResponse.builder()
                 .token(token)

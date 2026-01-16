@@ -1,5 +1,6 @@
 package ec.edu.espe.Asistencia_con_Geofencing.utils;
 
+import ec.edu.espe.Asistencia_con_Geofencing.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -10,8 +11,10 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
@@ -26,10 +29,11 @@ public class JwtUtil {
     return Keys.hmacShaKeyFor(secret.getBytes());
   }
 
-  public String generateToken(UUID userId, String email) {
+  public String generateToken(UUID userId, String email, List<String> roles) {
     Map<String, Object> claims = new HashMap<>();
     claims.put("userId", userId.toString());
     claims.put("email", email);
+    claims.put("roles", roles);
 
     return Jwts.builder()
             .claims(claims)
@@ -38,6 +42,11 @@ public class JwtUtil {
             .expiration(new Date(System.currentTimeMillis() + expiration))
             .signWith(getSigningKey())
             .compact();
+  }
+
+  @Deprecated
+  public String generateToken(UUID userId, String email) {
+    return generateToken(userId, email, List.of());
   }
 
   public Claims extractClaims(String token) {
