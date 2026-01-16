@@ -52,4 +52,5 @@ public class AttendanceSession {
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
     private Set<ReportRequest> reportRequests = new HashSet<>();
+
 }
