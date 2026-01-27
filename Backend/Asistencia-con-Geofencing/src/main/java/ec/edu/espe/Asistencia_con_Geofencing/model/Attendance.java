@@ -53,6 +53,9 @@ public class Attendance {
     @Column(name = "sensor_status", length = 100)
     private String sensorStatus;
 
+    @Column(name = "trust_score")
+    private Integer trustScore;
+
     @Column(name = "is_synced", nullable = false)
     private Boolean isSynced = false;
 

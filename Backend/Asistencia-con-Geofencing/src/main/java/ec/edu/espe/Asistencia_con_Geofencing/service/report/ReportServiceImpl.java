@@ -48,20 +48,16 @@ public class ReportServiceImpl implements ReportService {
         reportRequest.setReportType(ReportType.valueOf(request.getReportType()));
         reportRequest.setStatus(ReportStatus.GENERATING);
 
-        // Configurar sesión o estudiante según tipo de reporte
         ReportType reportType = ReportType.valueOf(request.getReportType());
 
         if (reportType == ReportType.STUDENT_PERSONAL) {
-            // Para reportes personales, el estudiante es el usuario actual
             reportRequest.setStudent(user);
 
-            // Validar que se proporcionen las fechas
             if (request.getStartDate() == null || request.getEndDate() == null) {
                 throw new IllegalArgumentException("Las fechas son requeridas para reportes personales");
             }
 
         } else if (reportType == ReportType.SESSION_ATTENDANCE) {
-            // Para reportes de sesión, validar que exista la sesión
             if (request.getSessionId() == null) {
                 throw new IllegalArgumentException("El ID de sesión es requerido para reportes de asistencia");
             }
@@ -69,9 +65,12 @@ public class ReportServiceImpl implements ReportService {
             AttendanceSession session = attendanceSessionRepository.findById(request.getSessionId())
                     .orElseThrow(() -> new ResourceNotFoundException("Sesión no encontrada"));
 
-            // Validar que el usuario sea el docente de la sesión
             if (!session.getTeacher().getId().equals(userId)) {
                 throw new RuntimeException("No tienes permiso para generar el reporte de esta sesión");
+            }
+
+            if (session.getActive()) {
+                throw new IllegalArgumentException("No se puede generar el reporte de una sesión activa. Por favor, finaliza la sesión primero.");
             }
 
             reportRequest.setSession(session);
@@ -92,11 +91,6 @@ public class ReportServiceImpl implements ReportService {
                 .build();
     }
 
-    /**
-     * Genera el PDF de forma asíncrona
-     * IMPORTANTE: Este método debe estar en la misma clase o en un componente separado con @Service
-     * Si está en la misma clase, Spring creará un proxy para manejarlo
-     */
     @Async("taskExecutor")
     @Transactional
     public void generatePdfAsync(UUID reportRequestId, GenerateReportRequest request) {
@@ -110,7 +104,6 @@ public class ReportServiceImpl implements ReportService {
             if (reportRequest.getReportType() == ReportType.STUDENT_PERSONAL) {
                 log.info("Generando reporte personal para estudiante: {}", reportRequest.getStudent().getId());
 
-                // Generar reporte personal del estudiante
                 filePath = pdfGeneratorService.generateStudentPersonalReport(
                         reportRequest.getStudent().getId(),
                         request.getStartDate(),
@@ -132,12 +125,6 @@ public class ReportServiceImpl implements ReportService {
             log.info("Reporte generado exitosamente: {}", reportRequestId);
             log.info("Archivo guardado en: {}", filePath);
             log.info("Archivo existe: {}", Files.exists(Paths.get(filePath)));
-
-            // TODO OPCIONAL: Enviar notificación push al usuario
-            // notificationService.sendReportCompletedNotification(
-            //     reportRequest.getRequestedBy().getId(),
-            //     reportRequestId
-            // );
 
         } catch (Exception e) {
             log.error("Error generando el reporte {}: {}", reportRequestId, e.getMessage(), e);
@@ -191,10 +178,26 @@ public class ReportServiceImpl implements ReportService {
         }
 
         try {
-            Path path = Paths.get(report.getFilePath());
+            String filePath = report.getFilePath();
+            
+            if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
+                log.info(" Descargando reporte desde URL: {}", filePath);
+                Resource resource = new UrlResource(filePath);
+                
+                if (!resource.exists()) {
+                    log.error(" Recurso no encontrado en URL: {}", filePath);
+                    throw new RuntimeException("Archivo no encontrado en Supabase");
+                }
+                
+                log.info(" Reporte disponible en: {}", filePath);
+                return resource;
+            }
+            
+        
+            Path path = Paths.get(filePath);
             Resource resource = new UrlResource(path.toUri());
 
-            log.info("Intentando acceder al archivo en: {}", report.getFilePath());
+            log.info("Intentando acceder al archivo local en: {}", filePath);
             log.info("Path absoluto: {}", path.toAbsolutePath());
             log.info("Archivo existe: {}", Files.exists(path));
 
@@ -215,5 +218,35 @@ public class ReportServiceImpl implements ReportService {
             log.error("Error accediendo al archivo del reporte: {}", e.getMessage());
             throw new RuntimeException("Error accediendo al archivo del reporte");
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteReport(UUID reportId, UUID userId) {
+        ReportRequest report = reportRequestRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado"));
+
+        // Validar que el usuario sea el dueño del reporte
+        if (!report.getRequestedBy().getId().equals(userId)) {
+            throw new RuntimeException("No tienes permiso para eliminar este reporte");
+        }
+
+        // Eliminar el archivo físico si existe
+        if (report.getFilePath() != null) {
+            try {
+                Path path = Paths.get(report.getFilePath());
+                if (Files.exists(path)) {
+                    Files.delete(path);
+                    log.info("Archivo de reporte eliminado: {}", report.getFilePath());
+                }
+            } catch (Exception e) {
+                log.error("Error eliminando archivo físico del reporte: {}", e.getMessage());
+                // Continuar con la eliminación del registro en BD aunque falle el archivo
+            }
+        }
+
+        // Eliminar el registro de la base de datos
+        reportRequestRepository.delete(report);
+        log.info("Registro de reporte eliminado: {}", reportId);
     }
 }

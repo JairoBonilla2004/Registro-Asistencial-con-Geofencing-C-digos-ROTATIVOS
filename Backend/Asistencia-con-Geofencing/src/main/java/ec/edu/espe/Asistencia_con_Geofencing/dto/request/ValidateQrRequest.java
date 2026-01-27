@@ -1,11 +1,13 @@
 package ec.edu.espe.Asistencia_con_Geofencing.dto.request;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -25,5 +27,6 @@ public class ValidateQrRequest {
     @NotNull(message = "La hora del dispositivo es requerida")
     private LocalDateTime deviceTime;
 
-    private Map<String, String> sensorData;
+    @Valid
+    private List<SensorDataDTO> sensorData = new ArrayList<>();
 }

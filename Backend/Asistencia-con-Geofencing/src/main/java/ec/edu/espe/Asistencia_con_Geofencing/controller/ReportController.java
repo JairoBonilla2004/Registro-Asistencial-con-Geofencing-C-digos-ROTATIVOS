@@ -69,4 +69,17 @@ public class ReportController {
 				)
 				.body(resource);
 	}
+
+	@DeleteMapping("/{id}")
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<ApiResponse<Void>> deleteReport(
+			@PathVariable UUID id,
+			@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+		reportService.deleteReport(id, userDetails.getId());
+
+		return ResponseEntity.ok(
+				ApiResponse.success("Reporte eliminado exitosamente")
+		);
+	}
 }

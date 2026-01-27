@@ -44,8 +44,12 @@ public class QrServiceImpl implements QrService {
             throw new RuntimeException("La sesión no está activa");
         }
 
+        LocalDateTime now = LocalDateTime.now();
+        qrTokenRepository.invalidateSessionTokens(session.getId(), now, now.minusMinutes(1));
+        log.info("Tokens anteriores de la sesión {} invalidados", session.getId());
+
         String token = UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
-        LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(request.getExpiresInMinutes());
+        LocalDateTime expiresAt = now.plusMinutes(request.getExpiresInMinutes());
 
         QrToken qrToken = new QrToken();
         qrToken.setSession(session);

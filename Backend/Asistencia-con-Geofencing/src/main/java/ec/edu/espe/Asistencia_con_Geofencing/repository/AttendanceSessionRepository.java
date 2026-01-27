@@ -18,4 +18,11 @@ public interface AttendanceSessionRepository extends JpaRepository<AttendanceSes
     long countByStartTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
     @Query("SELECT s FROM AttendanceSession s WHERE s.teacher.id = :teacherId ORDER BY s.startTime DESC")
     Page<AttendanceSession> findByTeacherId(UUID teacherId, Pageable pageable);
+    
+    // Verificar si un profesor ya tiene una sesión activa
+    boolean existsByTeacherIdAndActiveTrue(UUID teacherId);
+    
+    // Obtener la sesión activa de un profesor (si existe)
+    @Query("SELECT s FROM AttendanceSession s WHERE s.teacher.id = :teacherId AND s.active = true")
+    List<AttendanceSession> findActiveSessionByTeacherId(UUID teacherId);
 }

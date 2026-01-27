@@ -4,6 +4,7 @@ package ec.edu.espe.Asistencia_con_Geofencing.service.session;
 import ec.edu.espe.Asistencia_con_Geofencing.dto.mapper.SessionMapper;
 import ec.edu.espe.Asistencia_con_Geofencing.dto.request.CreateSessionRequest;
 import ec.edu.espe.Asistencia_con_Geofencing.dto.response.SessionResponse;
+import ec.edu.espe.Asistencia_con_Geofencing.dto.response.SessionWithDistanceResponse;
 import ec.edu.espe.Asistencia_con_Geofencing.exception.ResourceNotFoundException;
 import ec.edu.espe.Asistencia_con_Geofencing.exception.UnauthorizedException;
 import ec.edu.espe.Asistencia_con_Geofencing.model.AttendanceSession;
@@ -14,6 +15,7 @@ import ec.edu.espe.Asistencia_con_Geofencing.model.enums.RoleType;
 import ec.edu.espe.Asistencia_con_Geofencing.repository.AttendanceSessionRepository;
 import ec.edu.espe.Asistencia_con_Geofencing.repository.GeofenceZoneRepository;
 import ec.edu.espe.Asistencia_con_Geofencing.repository.UserRepository;
+import ec.edu.espe.Asistencia_con_Geofencing.service.geofence.GeofenceService;
 import ec.edu.espe.Asistencia_con_Geofencing.service.notification.NotificationService;
 import ec.edu.espe.Asistencia_con_Geofencing.service.notification.push.PushNotificationService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -36,12 +39,24 @@ public class SessionServiceImpl implements SessionService {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final PushNotificationService pushNotificationService;
+    private final GeofenceService geofenceService;
 
     @Override
     @Transactional
     public SessionResponse createSession(CreateSessionRequest request, UUID teacherId) {
         User teacher = userRepository.findById(teacherId)
                 .orElseThrow(() -> new ResourceNotFoundException("Docente no encontrado"));
+
+        if (sessionRepository.existsByTeacherIdAndActiveTrue(teacherId)) {
+            List<AttendanceSession> activeSessions = sessionRepository.findActiveSessionByTeacherId(teacherId);
+            if (!activeSessions.isEmpty()) {
+                AttendanceSession activeSession = activeSessions.get(0);
+                throw new IllegalStateException(
+                    String.format("Ya tienes una sesión activa: '%s'. Por favor, finaliza esa sesión antes de crear una nueva.", 
+                        activeSession.getName())
+                );
+            }
+        }
 
         GeofenceZone geofence = geofenceZoneRepository.findById(request.getGeofenceId())
                 .orElseThrow(() -> new ResourceNotFoundException("Zona de geofencing no encontrada"));
@@ -100,6 +115,42 @@ public class SessionServiceImpl implements SessionService {
         return SessionMapper.mapToResponse(session);
     }
 
-
+    @Override
+    @Transactional(readOnly = true)
+    public List<SessionWithDistanceResponse> getActiveSessionsWithDistances(BigDecimal latitude, BigDecimal longitude) {
+        List<AttendanceSession> activeSessions = sessionRepository.findByActiveTrue();
+        
+        return activeSessions.stream()
+                .map(session -> {
+                    GeofenceZone zone = session.getGeofence();
+                    
+                    // Calcular distancia desde la ubicación del estudiante a la zona
+                    double distance = geofenceService.calculateDistance(
+                            latitude,
+                            longitude,
+                            zone.getLatitude(),
+                            zone.getLongitude()
+                    );
+                    
+                    boolean withinZone = distance <= zone.getRadiusMeters();
+                    
+                    return SessionWithDistanceResponse.builder()
+                            .sessionId(session.getId())
+                            .name(session.getName())
+                            .teacherName(session.getTeacher().getFullName())
+                            .zoneName(zone.getName())
+                            .zoneLatitude(zone.getLatitude().doubleValue())
+                            .zoneLongitude(zone.getLongitude().doubleValue())
+                            .radiusMeters(zone.getRadiusMeters())
+                            .distanceInMeters(distance)
+                            .withinZone(withinZone)
+                            .qrToken(null) // No se expone el token en esta consulta por seguridad
+                            .startTime(session.getStartTime())
+                            .endTime(session.getEndTime())
+                            .active(session.getActive())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
 
 }

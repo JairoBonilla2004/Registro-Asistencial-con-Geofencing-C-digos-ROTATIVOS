@@ -16,4 +16,5 @@ public interface ReportService {
     Page<ReportResponse> getMyReports(UUID userId, Pageable pageable);
     ReportRequest getReportById(UUID reportId, UUID userId);
     Resource downloadReport(UUID reportId, UUID userId);
+    void deleteReport(UUID reportId, UUID userId);
 }

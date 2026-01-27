@@ -23,6 +23,7 @@ public class AttendanceResponse {
     private BigDecimal latitude;
     private BigDecimal longitude;
     private String sensorStatus;
+    private Integer trustScore;
     private Boolean isSynced;
     private String syncDelay;
     private String note;

@@ -11,7 +11,6 @@ public class AttendanceMapper {
         Duration syncDelay = null;
         String syncDelayStr = "N/A";
         
-        // Validar que ambas fechas existan antes de calcular la diferencia
         if (attendance.getDeviceTime() != null && attendance.getServerTime() != null) {
             syncDelay = Duration.between(attendance.getDeviceTime(), attendance.getServerTime());
             syncDelayStr = formatDuration(syncDelay);
@@ -28,6 +27,7 @@ public class AttendanceMapper {
                 .latitude(attendance.getLatitude())
                 .longitude(attendance.getLongitude())
                 .sensorStatus(attendance.getSensorStatus())
+                .trustScore(attendance.getTrustScore())
                 .isSynced(attendance.getIsSynced())
                 .syncDelay(syncDelayStr)
                 .build();

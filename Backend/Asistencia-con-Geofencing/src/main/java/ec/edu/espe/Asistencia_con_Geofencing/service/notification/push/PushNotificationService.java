@@ -12,14 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Servicio profesional de notificaciones push
- * 
- * ESTRATEGIA: Enviar a TODOS los dispositivos activos del usuario
- * - Garantiza que el usuario reciba la notificación donde esté
- * - Similar a WhatsApp, Gmail, Slack, Telegram, etc.
- * - Manejo inteligente de tokens inválidos con limpieza automática
- */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,10 +20,6 @@ public class PushNotificationService {
 
     private final DeviceRepository deviceRepository;
 
-    /**
-     * Envía notificación push a TODOS los dispositivos activos del usuario
-     * Implementa best practices de sistemas profesionales
-     */
     @Transactional
     public void sendAbsencePush(Notification notification){
         UUID userId = notification.getUser().getId();
@@ -65,10 +54,7 @@ public class PushNotificationService {
         log.info("Notificación enviada a usuario {}: {} exitoso(s), {} fallido(s)", 
             userId, successCount.get(), failureCount.get());
     }
-    
-    /**
-     * Envía la notificación a un dispositivo específico
-     */
+
     private void sendToDevice(Notification notification, String fcmToken) throws FirebaseMessagingException {
         AndroidConfig androidConfig = AndroidConfig.builder()
                 .setPriority(AndroidConfig.Priority.HIGH)
@@ -98,11 +84,7 @@ public class PushNotificationService {
         String response = FirebaseMessaging.getInstance().send(message);
         log.debug("Push enviado exitosamente: {}", response);
     }
-    
-    /**
-     * Maneja errores de FCM con limpieza automática de tokens inválidos
-     * Implementa estrategia profesional de limpieza de dispositivos obsoletos
-     */
+
     private void handlePushError(String fcmToken, UUID userId, FirebaseMessagingException e) {
         String errorCode = e.getErrorCode() != null ? e.getErrorCode().toString() : "UNKNOWN";
         String tokenPreview = fcmToken.substring(0, Math.min(20, fcmToken.length()));
@@ -115,7 +97,6 @@ public class PushNotificationService {
             log.warn("Token inválido detectado para usuario {} ({}...). Desactivando dispositivo automáticamente.", 
                 userId, tokenPreview);
             
-            // Limpieza automática: desactivar dispositivo con token inválido
             try {
                 deviceRepository.deactivateDeviceByFcmToken(fcmToken);
                 log.info("Dispositivo desactivado automáticamente por token inválido");
@@ -123,8 +104,7 @@ public class PushNotificationService {
                 log.error("Error al desactivar dispositivo con token inválido", ex);
             }
         } else {
-            // Errores temporales (red, servidor FCM caído, etc.)
-            log.error("Error temporal enviando push a usuario {} ({}...): {}", 
+            log.error("Error temporal enviando push a usuario {} ({}...): {}",
                 userId, tokenPreview, e.getMessage());
         }
     }

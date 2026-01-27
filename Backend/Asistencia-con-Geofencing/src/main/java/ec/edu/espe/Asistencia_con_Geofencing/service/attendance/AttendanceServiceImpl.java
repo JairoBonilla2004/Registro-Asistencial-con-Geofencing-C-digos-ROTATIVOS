@@ -9,9 +9,9 @@ import ec.edu.espe.Asistencia_con_Geofencing.dto.response.AttendanceResponse;
 import ec.edu.espe.Asistencia_con_Geofencing.dto.response.SyncResultResponse;
 import ec.edu.espe.Asistencia_con_Geofencing.exception.*;
 import ec.edu.espe.Asistencia_con_Geofencing.model.*;
-import ec.edu.espe.Asistencia_con_Geofencing.model.enums.SensorType;
 import ec.edu.espe.Asistencia_con_Geofencing.repository.*;
 import ec.edu.espe.Asistencia_con_Geofencing.service.geofence.GeofenceService;
+import ec.edu.espe.Asistencia_con_Geofencing.service.sensor.SensorValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     private final SensorEventRepository sensorEventRepository;
     private final AttendanceSessionRepository sessionRepository;
     private final GeofenceService geofenceService;
+    private final SensorValidationService sensorValidationService;
 
     @Override
     @Transactional
@@ -82,6 +84,9 @@ public class AttendanceServiceImpl implements AttendanceService {
         User student = userRepository.findById(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
 
+        Integer trustScore = calculateTrustScoreFromDistance(distance, withinGeofence);
+        log.info("Trust score calculado: {} (distancia: {}m, dentro: {})", trustScore, distance, withinGeofence);
+
         Attendance attendance = new Attendance();
         attendance.setSession(session);
         attendance.setStudent(student);
@@ -90,6 +95,9 @@ public class AttendanceServiceImpl implements AttendanceService {
         attendance.setLongitude(request.getLongitude());
         attendance.setWithinGeofence(withinGeofence);
         attendance.setIsSynced(true);
+        attendance.setTrustScore(trustScore);
+        String locationInfo = String.format("{\"distance\":%.2f,\"within_zone\":%b}", distance, withinGeofence);
+        attendance.setSensorStatus(locationInfo);
 
         // Registrar el dispositivo de origen si se proporciona
         if (request.getDeviceId() != null) {
@@ -101,19 +109,9 @@ public class AttendanceServiceImpl implements AttendanceService {
             }
         }
 
-        if (request.getSensorData() != null) {
-            String sensorStatus = String.format("compass:%s,proximity:%s",
-                    request.getSensorData().getOrDefault("compass", "N/A"),
-                    request.getSensorData().getOrDefault("proximity", "N/A")
-            );
-            attendance.setSensorStatus(sensorStatus);
-        }
-
         attendance = attendanceRepository.save(attendance);
-
-        if (request.getSensorData() != null) {
-            saveSensorEvents(student, session, attendance, request.getSensorData(), request.getDeviceTime());
-        }
+        log.info("✅ Asistencia registrada - ID: {}, TrustScore: {}, Distancia: {}m", 
+                attendance.getId(), trustScore, distance);
 
         return AttendanceMapper.mapToResponse(attendance);
     }
@@ -241,30 +239,44 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .collect(Collectors.toList());
     }
 
-    private void saveSensorEvents(User user, AttendanceSession session, Attendance attendance,
-                                  java.util.Map<String, String> sensorData, LocalDateTime deviceTime) {
-        if (sensorData.containsKey("compass")) {
-            SensorEvent compassEvent = new SensorEvent();
-            compassEvent.setUser(user);
-            compassEvent.setSession(session);
-            compassEvent.setAttendance(attendance);
-            compassEvent.setType(SensorType.COMPASS);
-            compassEvent.setValue(sensorData.get("compass"));
-            compassEvent.setDeviceTime(deviceTime);
-            sensorEventRepository.save(compassEvent);
+    /**
+     * Calcula el trust score basado únicamente en la distancia GPS a la zona
+     * 
+     * @param distance Distancia en metros a la zona
+     * @param withinGeofence Si está dentro del perímetro de la zona
+     * @return Score de 0-100
+     */
+    private Integer calculateTrustScoreFromDistance(Double distance, boolean withinGeofence) {
+        if (distance == null) {
+            return 50; // Score neutral si no hay datos
         }
 
-        if (sensorData.containsKey("proximity")) {
-            SensorEvent proximityEvent = new SensorEvent();
-            proximityEvent.setUser(user);
-            proximityEvent.setSession(session);
-            proximityEvent.setAttendance(attendance);
-            proximityEvent.setType(SensorType.PROXIMITY);
-            proximityEvent.setValue(sensorData.get("proximity"));
-            proximityEvent.setDeviceTime(deviceTime);
-            sensorEventRepository.save(proximityEvent);
+        // Dentro de la zona = score alto
+        if (withinGeofence && distance <= 50) {
+            return 100; // Perfecto - dentro de la zona
         }
+
+        // Muy cerca pero técnicamente fuera del radio
+        if (distance <= 10) {
+            return 95; // Excelente - prácticamente dentro
+        }
+
+        if (distance <= 20) {
+            return 85; // Muy bueno - muy cerca
+        }
+
+        if (distance <= 50) {
+            return 70; // Bueno (límite de VÁLIDO) - cerca
+        }
+
+        if (distance <= 100) {
+            return 55; // Sospechoso pero aceptable - distancia media
+        }
+
+        if (distance <= 200) {
+            return 30; // Sospechoso - lejos
+        }
+
+        return 10; // Muy sospechoso - muy lejos (>200m)
     }
-
-
 }

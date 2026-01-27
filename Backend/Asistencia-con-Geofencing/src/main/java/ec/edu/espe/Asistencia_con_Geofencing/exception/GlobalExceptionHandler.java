@@ -138,6 +138,13 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiResponse<Object>> handleIllegalState(IllegalStateException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(ex.getMessage(), "CONFLICT"));
+    }
+
     @ExceptionHandler(UserDisabledException.class)
     public ResponseEntity<ApiResponse<Object>> handleUserDisabled(UserDisabledException ex) {
         return ResponseEntity

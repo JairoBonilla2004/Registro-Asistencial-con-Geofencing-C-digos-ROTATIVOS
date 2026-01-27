@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import ec.edu.espe.Asistencia_con_Geofencing.dto.request.CreateSessionRequest;
 import ec.edu.espe.Asistencia_con_Geofencing.dto.response.AttendanceResponse;
 import ec.edu.espe.Asistencia_con_Geofencing.dto.response.SessionResponse;
+import ec.edu.espe.Asistencia_con_Geofencing.dto.response.SessionWithDistanceResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -84,5 +86,14 @@ public class SessionController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         SessionResponse response = sessionService.endSession(id, userDetails.getId());
         return ResponseEntity.ok(ApiResponse.success("Sesión finalizada correctamente", response));
+    }
+
+    @GetMapping("/active-with-distances")
+    @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER')")
+    public ResponseEntity<ApiResponse<List<SessionWithDistanceResponse>>> getActiveSessionsWithDistances(
+            @RequestParam BigDecimal latitude,
+            @RequestParam BigDecimal longitude) {
+        List<SessionWithDistanceResponse> sessions = sessionService.getActiveSessionsWithDistances(latitude, longitude);
+        return ResponseEntity.ok(ApiResponse.success(sessions));
     }
 }

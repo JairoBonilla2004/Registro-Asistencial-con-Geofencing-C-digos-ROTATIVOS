@@ -37,7 +37,7 @@ public class SensorEvent {
     @Column(nullable = false, length = 20)
     private SensorType type;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String value;
 
     @Column(name = "device_time", nullable = false)
