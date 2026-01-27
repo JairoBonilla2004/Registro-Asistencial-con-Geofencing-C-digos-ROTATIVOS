@@ -27,3 +27,5 @@ services:
         value: supabase
       - key: REPORTS_STORAGE_BUCKET_NAME
         value: reports
+      - key: DB_POOL_SIZE
+        value: 2

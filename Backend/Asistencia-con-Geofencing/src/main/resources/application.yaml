@@ -8,6 +8,14 @@ spring:
     username: ${DATABASE_USERNAME:postgres}
     password: ${DATABASE_PASSWORD:postgres123}
     driver-class-name: org.postgresql.Driver
+    # Configuración de HikariCP para Supabase (plan Free tiene límites bajos)
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:2}  # Supabase Free: max 3 conexiones en Session mode
+      minimum-idle: 1
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
 
   # Configuración JPA/Hibernate
   jpa:

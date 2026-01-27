@@ -63,6 +63,12 @@ REPORTS_STORAGE_TYPE=supabase
 REPORTS_STORAGE_BUCKET_NAME=reports
 ```
 
+#### Database Pool (Importante para Supabase Free)
+```
+DB_POOL_SIZE=2
+```
+> ⚠️ **Crítico**: Supabase Free permite máximo 3 conexiones simultáneas. Usa 2 para dejar margen.
+
 #### Spring Boot
 ```
 SPRING_PROFILES_ACTIVE=production
