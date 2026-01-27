@@ -10,7 +10,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     # Configuración de HikariCP para Supabase (plan Free tiene límites bajos)
     hikari:
-      maximum-pool-size: ${DB_POOL_SIZE:2}  # Supabase Free: max 3 conexiones en Session mode
+      maximum-pool-size: ${DB_POOL_SIZE:4}  # Supabase Free: max 3 conexiones en Session mode
       minimum-idle: 1
       connection-timeout: 30000
       idle-timeout: 600000
