@@ -31,3 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+### Environment Variables ###
+.env
+.env.local
+.env.production
+*.env
+
+#geofecing json
+/src/main/resources/geofencing-91f7e-firebase-adminsdk-fbsvc-c4ccaa7817.json
+### Sensitive Files ###
+**/application-secrets.yaml
+**/application-local.yaml
+*.pem
+*.key

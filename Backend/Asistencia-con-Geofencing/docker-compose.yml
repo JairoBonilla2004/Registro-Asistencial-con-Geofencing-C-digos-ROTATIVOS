@@ -1,19 +1,18 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: asistencia_mysql
+  postgres:
+    image: postgres:15
+    container_name: asistencia_postgres
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root123
-      MYSQL_DATABASE: asistencia_geofecing
-      MYSQL_USER: jairo
-      MYSQL_PASSWORD: jairo123
+      POSTGRES_DB: asistencia_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - asistencia_postgres_data:/var/lib/postgresql/data
 
 volumes:
-  mysql_data:
+  asistencia_postgres_data:

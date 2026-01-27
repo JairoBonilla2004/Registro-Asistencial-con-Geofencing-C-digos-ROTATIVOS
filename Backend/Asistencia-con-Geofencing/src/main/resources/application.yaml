@@ -2,17 +2,17 @@ spring:
   application:
     name: asistencia-con-geofencing
 
-  # Configuración de Base de Datos PostgreSQL (Docker)
+  # Configuración de Base de Datos PostgreSQL
   datasource:
-    url: jdbc:postgresql://localhost:5432/asistencia_db
-    username: postgres
-    password: postgres123
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/asistencia_db}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres123}
     driver-class-name: org.postgresql.Driver
 
   # Configuración JPA/Hibernate
   jpa:
     hibernate:
-      ddl-auto: update # Cambiar a 'validate' en producción
+      ddl-auto: update # DESARROLLO: Recrea las tablas en cada reinicio. PRODUCCIÓN: cambiar a 'validate'
     show-sql: true
     properties:
       hibernate:
@@ -20,7 +20,11 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           time_zone: America/Guayaquil
-  
+          # Deshabilitar prepared statements para compatibilidad con PgBouncer (Supabase)
+          use_get_generated_keys: false
+        query:
+          use_prepared_statements: false
+
   # Configuración de Multipart (para archivos)
   servlet:
     multipart:
@@ -37,8 +41,8 @@ logging:
 
 # Configuración JWT
 jwt:
-  secret: ${JWT_SECRET:your-very-long-secret-key-change-this-in-production-minimum-256-bits-for-HS256}
-  expiration: 1800000  # 30 minutos en milisegundos (20-30 min como especificado)
+  secret: ${JWT_SECRET:dev-secret-key-only-for-local-development-minimum-256-bits-CHANGE-IN-PRODUCTION-12345678901234567890123456789012345678901234567890}
+  expiration: ${JWT_EXPIRATION:1800000}  # 30 minutos por defecto
 
 # Configuración de tokens QR
 qr:
@@ -59,12 +63,10 @@ springdoc:
 # Configuración OAuth (Google y Facebook)
 oauth:
   google:
-    # Web Client ID del google-services.json (client_type: 3)
-    client-id: ${GOOGLE_CLIENT_ID:TU-GOOGLE-CLIENT-ID}
+    client-id: ${GOOGLE_CLIENT_ID:}
   facebook:
-    # Obtener en: https://developers.facebook.com/apps/
-    app-id: ${FACEBOOK_APP_ID:tu-facebook-app-id}
-    app-secret: ${FACEBOOK_APP_SECRET:tu-facebook-app-secret}
+    app-id: ${FACEBOOK_APP_ID:}
+    app-secret: ${FACEBOOK_APP_SECRET:}
 
 # Configuración de Geofencing
 geofencing:
@@ -73,23 +75,30 @@ geofencing:
 # Configuración de Reportes
 reports:
   storage:
-    path: ${REPORTS_PATH:${java.io.tmpdir}/reports}  # Ruta donde se guardan los PDFs generados (usando directorio temporal del sistema)
+    type: supabase
+    bucket-name: reports
+  retention:
+    days: 7
+
+# Credenciales de Supabase
+supabase:
+  url: ${SUPABASE_URL:}
+  key: ${SUPABASE_KEY:} # Usa la 'service_role' key para tener permisos de escritura
+
 
 # Configuración de Firebase Cloud Messaging (FCM)
 fcm:
-  enabled: true  # Cambiar a true cuando se configure FCM
-  service-account-file: ${FCM_SERVICE_ACCOUNT:TU-RUTA-AL-ARCHIVO-JSON-DE-FIREBASE}
-  # TODO: Configurar credenciales de Firebase
+  enabled: true
+  service-account-file: ${FCM_SERVICE_ACCOUNT:geofencing-91f7e-firebase-adminsdk-fbsvc-c4ccaa7817.json}
 
-# Configuración del servidor
 server:
-  port: 8080
+  port: ${PORT:8080}
   servlet:
     context-path: /
   error:
     include-message: always
     include-binding-errors: always
-    include-stacktrace: on_param
+    include-stacktrace: ${SHOW_STACKTRACE:never}
     include-exception: false
 
 # Configuración de Actuator (health checks)
@@ -102,13 +111,9 @@ management:
     health:
       show-details: when-authorized
 
-# Configuración de CORS (adicional a SecurityConfig)
+# Configuración de CORS
 cors:
-  allowed-origins: 
-    - http://localhost:5173
-    - http://localhost:3000
-    - http://localhost:8080
-    - https://tu-dominio.com
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
 
 # Configuración para desarrollo
 ---
