@@ -4,10 +4,12 @@
 
 1. Cuenta en [Render](https://render.com)
 2. Repositorio Git con el proyecto
-3. Cuenta Supabase con:
+3. Cuenta en [Neon](https://neon.tech) con:
    - Base de datos PostgreSQL configurada
+   - Credenciales de conexión (se obtienen automáticamente)
+4. Cuenta Supabase (opcional, solo para almacenamiento de reportes):
    - Bucket `reports` creado en Storage
-   - API Keys generadas
+   - API Keys generadas (service_role key)
 
 ## 🔧 Configuración en Render
 
@@ -36,20 +38,32 @@
 
 Configura las siguientes variables en **Environment** → **Environment Variables**:
 
-#### Base de Datos (Supabase)
+#### Base de Datos (Neon)
 ```
-DATABASE_URL=postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres
+DATABASE_URL=jdbc:postgresql://[HOST]/[DATABASE]?sslmode=require
+DATABASE_USERNAME=neondb_owner
+DATABASE_PASSWORD=npg_xxxxxxxxxxxxx
 ```
 **Ejemplo:**
 ```
-postgresql://postgres.xxxxxxxx:mypassword@aws-0-us-west-2.pooler.supabase.com:5432/postgres
+DATABASE_URL=TUS_CREDENCIALES
+DATABASE_USERNAME=TUS_CREDENCIALES
+DATABASE_PASSWORD=TUS_CREDENCIALES
 ```
 
-#### Supabase Storage
+> 📝 **Cómo obtener credenciales de Neon:**
+> 1. Ve a tu proyecto en [Neon Console](https://console.neon.tech)
+> 2. En la sección "Connection Details", copia la cadena de conexión
+> 3. Convierte el formato PostgreSQL a JDBC:
+>    - De: `postgresql://user:pass@host/db?sslmode=require`
+>    - A: `jdbc:postgresql://host/db?sslmode=require`
+
+#### Supabase Storage (Opcional - Solo para reportes)
 ```
 SUPABASE_URL=https://xxxxxxxx.supabase.co
 SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
+> ⚠️ Si prefieres almacenamiento local, omite estas variables y configura `REPORTS_PATH`
 
 #### JWT Configuration
 ```
@@ -58,21 +72,40 @@ JWT_EXPIRATION=86400000
 ```
 
 #### Storage Configuration
+Para Supabase Storage:
 ```
 REPORTS_STORAGE_TYPE=supabase
 REPORTS_STORAGE_BUCKET_NAME=reports
 ```
 
-#### Database Pool (Importante para Supabase Free)
+Para almacenamiento local:
 ```
-DB_POOL_SIZE=2
+REPORTS_PATH=/app/reports
 ```
-> ⚠️ **Crítico**: Supabase Free permite máximo 3 conexiones simultáneas. Usa 2 para dejar margen.
+
+#### Database Pool (Para Neon)
+```
+DB_POOL_SIZE=10
+```
+> ✅ **Neon Free** permite más conexiones concurrentes que Supabase. Pool de 10 es seguro.
+
+#### OAuth (Opcional)
+```
+GOOGLE_CLIENT_ID=tu-google-client-id.apps.googleusercontent.com
+FACEBOOK_APP_ID=tu-facebook-app-id
+FACEBOOK_APP_SECRET=tu-facebook-app-secret
+```
+
+#### Firebase Cloud Messaging (Opcional)
+```
+FCM_SERVICE_ACCOUNT=geofencing-firebase-adminsdk.json
+```
 
 #### Spring Boot
 ```
-SPRING_PROFILES_ACTIVE=production
+SPRING_PROFILES_ACTIVE=prod
 SERVER_PORT=8080
+CORS_ALLOWED_ORIGINS=https://tu-frontend.com,https://www.tu-frontend.com
 ```
 
 ### Paso 4: Health Check

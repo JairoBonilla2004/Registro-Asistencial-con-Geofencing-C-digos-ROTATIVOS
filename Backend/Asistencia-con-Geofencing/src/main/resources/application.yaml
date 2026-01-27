@@ -2,25 +2,25 @@ spring:
   application:
     name: asistencia-con-geofencing
 
-  # Configuración de Base de Datos PostgreSQL
+  # Configuración de Base de Datos PostgreSQL (Neon)
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/asistencia_db}
-    username: ${DATABASE_USERNAME:postgres}
-    password: ${DATABASE_PASSWORD:postgres123}
+    url: ${DATABASE_URL:jdbc:postgresql:}
+    username: ${DATABASE_USERNAME:}
+    password: ${DATABASE_PASSWORD:}
     driver-class-name: org.postgresql.Driver
-    # Configuración de HikariCP para Supabase (plan Free tiene límites bajos)
+    # Configuración de HikariCP para Neon (pooling connection)
     hikari:
-      maximum-pool-size: ${DB_POOL_SIZE:4}  # Supabase Free: max 3 conexiones en Session mode
-      minimum-idle: 1
+      maximum-pool-size: ${DB_POOL_SIZE:10}  # Neon soporta más conexiones concurrentes
+      minimum-idle: 2
       connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1800000
-      leak-detection-threshold: 60000
+      leak-detection-threshold: 2000
 
   # Configuración JPA/Hibernate
   jpa:
     hibernate:
-      ddl-auto: validate  # DESARROLLO: Recrea las tablas en cada reinicio. PRODUCCIÓN: cambiar a 'validate' 
+      ddl-auto: update  # Crea/actualiza las tablas automáticamente. En PRODUCCIÓN: cambiar a 'validate'
     show-sql: true
     properties:
       hibernate:
@@ -28,10 +28,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           time_zone: America/Guayaquil
-          # Deshabilitar prepared statements para compatibilidad con PgBouncer (Supabase)
-          use_get_generated_keys: false
-        query:
-          use_prepared_statements: false
+          # Neon soporta prepared statements nativamente
+          use_get_generated_keys: true
 
   # Configuración de Multipart (para archivos)
   servlet:
@@ -83,15 +81,10 @@ geofencing:
 # Configuración de Reportes
 reports:
   storage:
-    type: supabase
-    bucket-name: reports
+    type: local  # Cambiar a 's3', 'cloudinary' o mantener 'local' según necesites
+    path: ${REPORTS_PATH:./reports}  # Ruta local para almacenar reportes
   retention:
     days: 7
-
-# Credenciales de Supabase
-supabase:
-  url: ${SUPABASE_URL:}
-  key: ${SUPABASE_KEY:} # Usa la 'service_role' key para tener permisos de escritura
 
 
 # Configuración de Firebase Cloud Messaging (FCM)
