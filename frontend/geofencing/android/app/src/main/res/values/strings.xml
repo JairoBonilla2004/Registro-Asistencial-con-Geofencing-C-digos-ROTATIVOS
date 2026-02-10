@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Geofencing</string>
+    
+    <string name="facebook_app_id">2218888655607160</string>
+    <string name="fb_login_protocol_scheme">fbYOUR_FACEBOOK_APP_ID</string>
+    <string name="facebook_client_token">ca8ee7626b721d4c30358c9ad5896fcd</string>
+</resources>
