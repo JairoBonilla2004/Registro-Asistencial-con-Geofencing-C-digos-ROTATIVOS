@@ -1,0 +1,165 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+
+
+# Android Signing Keys - CRÍTICO
+android/key.properties
+android/app/*.jks
+android/app/*.keystore
+*.jks
+*.keystore
+
+# Firebase/Google Services - CRÍTICO (contiene API Keys)
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+ios/firebase_app_id_file.json
+
+# Local Configuration - CRÍTICO (rutas locales del SDK)
+android/local.properties
+ios/Flutter/flutter_export_environment.sh
+
+# Environment Files - Claves API, URLs, Secretos
+.env
+.env.*
+.env.local
+.env.production
+.env.development
+*.env
+
+# API Keys y Configuraciones Sensibles
+**/api_keys.dart
+**/secrets.dart
+**/credentials.dart
+**/config.private.dart
+
+# OAuth Credentials
+**/oauth_credentials.json
+**/client_secrets.json
+
+# Certificados y Llaves Privadas
+*.pem
+*.p12
+*.p8
+*.cer
+*.key
+*.crt
+*.der
+
+# Gradle Properties con Secrets
+gradle.properties
+!android/gradle/wrapper/gradle-wrapper.properties
+
+# iOS Provisioning Profiles y Certificates
+ios/Runner.xcworkspace/
+ios/Pods/
+ios/Runner.xcodeproj/xcuserdata/
+*.mobileprovision
+*.certSigningRequest
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs con Información Sensible
+*.log
+logs/
+log/
+
+# Backups
+*.backup
+*.bak
+*~
+
+# Archivos temporales
+tmp/
+temp/
+*.tmp
+
+# iOS Specific
+ios/Flutter/flutter_export_environment.sh
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+
+# Gradle User Home
+.gradle/
+!gradle/wrapper/
+
+# Android Studio
+.idea/
+*.iml
+
+# Build outputs
+/android/.gradle/
+/android/app/build/
+/android/build/
+/ios/build/
+/build/
+
+# Fastlane (deployment automation)
+ios/fastlane/report.xml
+ios/fastlane/Preview.html
+ios/fastlane/screenshots
+ios/fastlane/test_output
+android/fastlane/report.xml
+android/fastlane/Preview.html
+android/fastlane/screenshots
+android/fastlane/test_output
+
+# Play Store Deployment
+android/app/release/
+*.aab
+!example.aab
+
+# App Store Deployment  
+*.ipa
+!example.ipa

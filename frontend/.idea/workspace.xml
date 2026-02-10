@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="771366b8-c775-4ab3-89ef-a1112834dc88" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/mvnw.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/mvnw.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/dto/request/SyncBatchRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/dto/request/SyncBatchRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/dto/response/AuthResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/dto/response/AuthResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/model/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/model/Role.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/AttendanceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/AttendanceRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/AttendanceSessionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/AttendanceSessionRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/NotificationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/NotificationRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/OAuthAccountRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/OAuthAccountRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/QrTokenRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/QrTokenRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/ReportRequestRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/ReportRequestRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/SensorEventRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/SensorEventRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/SyncBatchRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/SyncBatchRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/java/ec/edu/espe/Asistencia_con_Geofencing/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/Asistencia-con-Geofencing/src/main/resources/application.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 3
+}]]></component>
+  <component name="ProjectId" id="37IHEsEN0rDMXFptHyX2GTca5UL" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
+    "io.flutter.project.isFirstOpen": "true",
+    "kotlin-language-version-configured": "true",
+    "settings.editor.selected.configurable": "AndroidSdkUpdater",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="771366b8-c775-4ab3-89ef-a1112834dc88" name="Changes" comment="" />
+      <created>1766583560737</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1766583560737</updated>
+    </task>
+    <servers />
+  </component>
+</project>
